@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+    {% if results %}
+        {% for drug in results %}
+            <div>
+                <h2>{{ drug.name }}</h2>
+                <p>{{ drug.description }}</p>
+                <p>CAS Number: {{ drug.cas_number }}</p>
+                <p>State: {{ drug.state }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</body>
+</html>
