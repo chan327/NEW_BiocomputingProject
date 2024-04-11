@@ -7,7 +7,6 @@ app = Flask(__name__)
 def index():
     return render_template('index.html', name='PyCharm')
 
-print('Testingggggg')
 
 
 if __name__ == '__main__':
