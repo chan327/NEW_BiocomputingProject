@@ -13,7 +13,7 @@ names = []
 cas_numbers = []
 descriptions = []
 
-with open('drugbank_small.xml') as file:
+with open('../drugbank_small.xml') as file:
     is_within_drug = False
     for line in file:
         # Check if we're entering a new drug entry
