@@ -2,7 +2,7 @@
 <drugbank xmlns="http://www.drugbank.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.drugbank.ca http://www.drugbank.ca/docs/drugbank.xsd" version="5.1" exported-on="2024-03-14">
 <drug type="biotech" created="2005-06-13" updated="2024-01-02">
   <drugbank-id primary="true">DB00001</drugbank-id>
-  <drugbank-id>BTD00024</drugbank-id>
+  <drugbank-id>BTD00024</drugbank-id>/
   <drugbank-id>BIOD00024</drugbank-id>
   <name>Lepirudin</name>
   <description>Lepirudin is a recombinant hirudin formed by 65 amino acids that acts as a highly specific and direct thrombin inhibitor.[L41539,L41569] Natural hirudin is an endogenous anticoagulant found in _Hirudo medicinalis_ leeches.[L41539] Lepirudin is produced in yeast cells and is identical to natural hirudin except for the absence of sulfate on the tyrosine residue at position 63 and the substitution of leucine for isoleucine at position 1 (N-terminal end).[A246609] &#13;
