@@ -13,7 +13,7 @@ names = []
 cas_numbers = []
 descriptions = []
 
-with open('drugbank.xml') as file:
+with open('full database.xml') as file:
     is_within_drug = False
     for line in file:
         # Check if we're entering a new drug entry
@@ -36,4 +36,4 @@ with open('drugbank.xml') as file:
             elif '<description>' in line and not current_drug['description']:
                 current_drug['description'] = extract_data_from_line(line, 'description')
 
-print(names, cas_numbers, descriptions)
+print(names)
