@@ -1,21 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Search Results</title>
+    <title> Sample Results Page  </title>
+     <style>
+        /* CSS styles */
+        body {
+            background-color: black; /* Set background color to black */
+            color: white; /* Set text color to white for better visibility */
+        }
+
+        .topnav {
+            margin-bottom: 20px; /* Add margin at the bottom */
+        }
+
+    </style>    <div style = "text-align: center;">
+            <span style="font-size: 20px;">
+                <a href="/p1">P1</a>
+            </span>
+    </div>
 </head>
+
 <body>
-    <h1>Search Results</h1>
-    {% if results %}
-        {% for drug in results %}
-            <div>
-                <h2>{{ drug.name }}</h2>
-                <p>{{ drug.description }}</p>
-                <p>CAS Number: {{ drug.cas_number }}</p>
-                <p>State: {{ drug.state }}</p>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No results found.</p>
-    {% endif %}
+    <!-- Type in the "/nothome" at the end of the webpage to get this result-->
+    <meta charset="UTF-8">
+
+    <title>P1</title>
+<div style="text-align: center;">
+    <h1><span style="font-size:36px;">This is our contact picture </span></h1>
+
+    <h2> Sample Page </h2>
+
+    <p1><span style="font-size:20px;"> This is the sample page</span><br></p1>
+
+    <img src=""/>
+</div>
+
 </body>
+
 </html>

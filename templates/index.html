@@ -8,6 +8,7 @@
             font-family: "Roboto Light";
         }
         .topnav input[type=text] {
+            overflow:
             float: center;
             padding: 10px;
             margin-top: 10px;
@@ -28,9 +29,24 @@
 </div>
 <!-- FORM SEARCH -->
 <div class="topnav">
-    <form action="/search" method="post">
-        <input type="text" name="search_term" placeholder="  Search Drugs Here!">
-        <input type="submit" value="Search">
-    </form>
+<div class="topnav">
+                <input type="text" id="searchInput" placeholder="Search Drugs...">
+                <br>
+            </div> <!-- Close the topnav div -->
+        </p2>
+    </div>
+
+    <script>
+        // JavaScript code to make the search bar work
+        document.getElementById("searchInput").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                var input = document.getElementById('searchInput');
+                var searchValue = input.value.toLowerCase();
+                if (searchValue === "aspirin") {
+                    window.location.href = "http://127.0.0.1:8001//results";
+                }
+            }
+        });
+    </script>
 </div>
 </html>
