@@ -46,4 +46,16 @@ with open('full database.xml') as file:
                 current_drug['smiles'] = extract_data_from_line(value, 'value')
 # print(smiles)
 # print(len(names), len(cas_numbers), len(descriptions), len(smiles))
-print(list_of_drugs[20])
+# print(list_of_drugs[20])
+
+output_file_path = 'drugs_data.txt'
+
+# Write the data to the file
+with open(output_file_path, 'w') as file:
+    for name, cas_number, description, smiles in zip(names, cas_numbers, descriptions, smiles):
+        # Writing each drug's data followed by a delimiter line
+        file.write(f"Name: {name}\n")
+        file.write(f"CAS Number: {cas_number}\n")
+        file.write(f"Description: {description}\n")
+        file.write(f"SMILES String: {smiles}\n")
+        file.write('-' * 50 + '\n')  # Delimiter line for readability
