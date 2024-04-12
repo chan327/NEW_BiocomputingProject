@@ -1,41 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title> Sample Results Page  </title>
-     <style>
-        /* CSS styles */
-        body {
-            background-color: black; /* Set background color to black */
-            color: white; /* Set text color to white for better visibility */
-        }
-
-        .topnav {
-            margin-bottom: 20px; /* Add margin at the bottom */
-        }
-
-    </style>    <div style = "text-align: center;">
-            <span style="font-size: 20px;">
-                <a href="/p1">P1</a>
-            </span>
-    </div>
-</head>
-
-<body>
-    <!-- Type in the "/nothome" at the end of the webpage to get this result-->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aspirin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
 
-    <title>P1</title>
-<div style="text-align: center;">
-    <h1><span style="font-size:36px;">This is our contact picture </span></h1>
+        header {
+            background-color: black;
+            color: #DAA520;
+            padding: 20px;
+            text-align: center;
+        }
 
-    <h2> Sample Page </h2>
+        h1, h2, h3 {
+            margin: 0;
+        }
 
-    <p1><span style="font-size:20px;"> This is the sample page</span><br></p1>
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-    <img src=""/>
-</div>
+        .info-block {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
+        .long-vertical-block {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            clear: both;
+        }
+
+        .info-block img {
+            max-width: 50%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Aspirin</h1>
+        <p>By Adam, Kaitlyn, Nikhil</p>
+    </header>
+
+    <div class="container">
+        <div class="info-block">
+            <h2>About Aspirin</h2>
+            <p>(Description) Aspirin is a commonly used medication to relieve pain, reduce inflammation, and lower fever. It belongs to a class of drugs known as nonsteroidal anti-inflammatory drugs (NSAIDs). Additionally, aspirin is often used in low doses to reduce the risk of heart attacks, strokes, and blood clot formation.</p>
+        </div>
+
+        <div class="info-block">
+            <h2>Chemical Identifiers</h2>
+            <ul>
+                <li>UNI</li>
+                <li>IUPAC</li>
+                <li>Cas #</li>
+                <li>SMILES</li>
+            </ul>
+        </div>
+
+        <div class="info-block long-vertical-block">
+            <h2>Targets</h2>
+            <ul>
+                <li>Target 1?</li>
+                <li>Target 2?</li>
+                <li>Target 3?</li>
+            </ul>
+        </div>
+
+        <div class="info-block">
+            <h2>Structure of Aspirin</h2>
+            <a href="#" id="Peter Griffin"><img src="https://d1whtlypfis84e.cloudfront.net/guides/wp-content/uploads/2020/01/13131932/15.png"></a>
+        </div>
+    </div>
+
+    <footer>
+        <p>pls work</p>
+    </footer>
 </body>
-
 </html>

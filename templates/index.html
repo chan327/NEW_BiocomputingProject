@@ -1,52 +1,85 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drug Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: "Roboto Light";
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
         }
-        .topnav input[type=text] {
-            overflow:
-            float: center;
+
+        header {
+            background-color: black;
+            color: #DAA520; /* Gold color */
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
             padding: 10px;
-            margin-top: 10px;
-            margin-right: 10px;
-            font-size: 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 20px;
+            width: 70%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
-<body style="background-color:black;">
-<FONT COLOR="#daaa00">
-    <h1><center>Drug Bank</center></h1>
-    <p><center>By Adam, Kaitlyn, Nikhil</center></p>
-</body>
-<!-- IMG -->
-<center>
-<div class="search">
-    <a href="#" id="Peter Griffin"><img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png"/></a>
-</div>
-<!-- FORM SEARCH -->
-<div class="topnav">
-<div class="topnav">
-                <input type="text" id="searchInput" placeholder="Search Drugs...">
-                <br>
-            </div> <!-- Close the topnav div -->
-        </p2>
+<body>
+    <header>
+        <h1>Drug Bank</h1>
+        <p>By Adam, Kaitlyn, Nikhil</p>
+    </header>
+
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png" alt="Drug Bank Logo" class="logo">
+        <form id="searchForm">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search Drugs...">
+            <button type="submit" class="search-button">Search</button>
+        </form>
     </div>
 
     <script>
-        // JavaScript code to make the search bar work
-        document.getElementById("searchInput").addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                var input = document.getElementById('searchInput');
-                var searchValue = input.value.toLowerCase();
-                if (searchValue === "aspirin") {
-                    window.location.href = "http://127.0.0.1:8001//results";
-                }
+        document.getElementById("searchForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var input = document.getElementById('searchInput');
+            var searchValue = input.value.toLowerCase();
+            if (searchValue === "aspirin") {
+                window.location.href = "http://127.0.0.1:8001/results";
             }
         });
     </script>
-</div>
+</body>
 </html>
