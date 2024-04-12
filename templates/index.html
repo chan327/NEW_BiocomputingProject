@@ -66,20 +66,30 @@
     <div class="container">
         <img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png" alt="Drug Bank Logo" class="logo">
         <form id="searchForm">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search Drugs...">
+
+        <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Search for items...">
+        <ul id="results"></ul>
+
+
             <button type="submit" class="search-button">Search</button>
         </form>
     </div>
 
     <script>
-        document.getElementById("searchForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            var input = document.getElementById('searchInput');
-            var searchValue = input.value.toLowerCase();
-            if (searchValue === "aspirin") {
-                window.location.href = "http://127.0.0.1:8001/results";
-            }
-        });
+        function searchItems() {
+            var input = document.getElementById('searchInput').value;
+            fetch(`/search?query=${input}`)
+                .then(response => response.json())
+                .then(names => {
+                    var resultList = document.getElementById('results');
+                    resultList.innerHTML = '';
+                    names.forEach(item => {
+                        var li = document.createElement('li');
+                        li.textContent = item;
+                        resultList.appendChild(li);
+                    });
+                });
+        }
     </script>
 </body>
 </html>
