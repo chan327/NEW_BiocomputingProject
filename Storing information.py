@@ -13,6 +13,7 @@ names = []
 cas_numbers = []
 descriptions = []
 smiles = []
+fasta = []
 list_of_drugs = []
 
 with open('full database.xml') as file:
@@ -21,7 +22,7 @@ with open('full database.xml') as file:
         # Check if we're entering a new drug entry
         if '<drug ' in line:
             is_within_drug = True
-            current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None}
+            current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None, 'fasta': None}
             list_of_drugs.append(current_drug)
         elif '</drug>' in line and is_within_drug:
             # End of the current drug entry
@@ -32,6 +33,8 @@ with open('full database.xml') as file:
                 descriptions.append(current_drug['description'])
                 if current_drug['smiles'] is not None:
                     smiles.append(current_drug['smiles'])
+                if current_drug['fasta'] is not None:
+                    fasta.append(current_drug['smiles'])
             is_within_drug = False
         elif is_within_drug:
             # Extract data if we're within a drug entry
@@ -44,18 +47,21 @@ with open('full database.xml') as file:
             elif '<kind>SMILES</kind>' in line and not current_drug['smiles']:
                 value = next(file)
                 current_drug['smiles'] = extract_data_from_line(value, 'value')
+            elif '<sequence format="FASTA">' in line and not current_drug['fasta']:
+                fasta_value = next(file)
+                current_drug['fasta'] = extract_data_from_line(fasta_value, 'sequence')
 # print(smiles)
 # print(len(names), len(cas_numbers), len(descriptions), len(smiles))
-# print(list_of_drugs[20])
+print(list_of_drugs[0:10])
 
-output_file_path = 'drugs_data.txt'
-
-# Write the data to the file
-with open(output_file_path, 'w') as file:
-    for name, cas_number, description, smiles in zip(names, cas_numbers, descriptions, smiles):
-        # Writing each drug's data followed by a delimiter line
-        file.write(f"Name: {name}\n")
-        file.write(f"CAS Number: {cas_number}\n")
-        file.write(f"Description: {description}\n")
-        file.write(f"SMILES String: {smiles}\n")
-        file.write('-' * 50 + '\n')  # Delimiter line for readability
+# output_file_path = 'drugs_data.txt'
+#
+# # Write the data to the file
+# with open(output_file_path, 'w') as file:
+#     for name, cas_number, description, smiles in zip(names, cas_numbers, descriptions, smiles):
+#         # Writing each drug's data followed by a delimiter line
+#         file.write(f"Name: {name}\n")
+#         file.write(f"CAS Number: {cas_number}\n")
+#         file.write(f"Description: {description}\n")
+#         file.write(f"SMILES String: {smiles}\n")
+#         file.write('-' * 50 + '\n')  # Delimiter line for readability
