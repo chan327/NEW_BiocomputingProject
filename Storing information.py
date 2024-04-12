@@ -14,7 +14,7 @@ cas_numbers = []
 descriptions = []
 smiles = []
 
-with open('drugbank.xml') as file:
+with open('full database.xml') as file:
     is_within_drug = False
     for line in file:
         # Check if we're entering a new drug entry
