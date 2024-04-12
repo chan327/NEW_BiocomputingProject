@@ -57,5 +57,5 @@ if __name__ == '__main__':
                     value = next(file)
                     current_drug['smiles'] = extract_data_from_line(value, 'value')
 
-    print(smiles)
+    print(len(smiles))
     # print(names, cas_numbers, descriptions)
