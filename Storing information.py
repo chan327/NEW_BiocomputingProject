@@ -12,20 +12,22 @@ def extract_data_from_line(line, tag):
 names = []
 cas_numbers = []
 descriptions = []
+smiles = []
 
-with open('full database.xml') as file:
+with open('drugbank.xml') as file:
     is_within_drug = False
     for line in file:
         # Check if we're entering a new drug entry
         if '<drug ' in line:
             is_within_drug = True
-            current_drug = {'name': None, 'cas_number': None, 'description': None}
+            current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None}
         elif '</drug>' in line and is_within_drug:
             # End of the current drug entry
             if all(value is not None for value in current_drug.values()):  # Ensure all fields are populated
                 names.append(current_drug['name'])
                 cas_numbers.append(current_drug['cas_number'])
                 descriptions.append(current_drug['description'])
+                smiles.append(current_drug['smiles'])
             is_within_drug = False
         elif is_within_drug:
             # Extract data if we're within a drug entry
@@ -35,5 +37,9 @@ with open('full database.xml') as file:
                 current_drug['cas_number'] = extract_data_from_line(line, 'cas-number')
             elif '<description>' in line and not current_drug['description']:
                 current_drug['description'] = extract_data_from_line(line, 'description')
+            elif '<kind>SMILES</kind>' in line and not current_drug['smiles']:
+                value = next(file)
+                current_drug['smiles'] = extract_data_from_line(value, 'value')
 
-print(names)
+print(smiles)
+#print(names, cas_numbers, descriptions)
