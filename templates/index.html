@@ -86,7 +86,10 @@
                     names.forEach(item => {
                         var li = document.createElement('li');
                         li.textContent = item;
+                        li.style.cursor = 'pointer';
+                        li.onclick = function() { window.location.href = `/item/${item}`; };
                         resultList.appendChild(li);
+
                     });
                 });
         }

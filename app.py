@@ -58,6 +58,13 @@ def search():
     results = [names for names in names if query in names.lower()]
     return jsonify(results[:10])
 
+@app.route('/item/<name>')
+def item_page(name):
+    if name in names:
+        return render_template('results.html', item_name=name)
+    else:
+        return "Item not found", 404
+
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
 
