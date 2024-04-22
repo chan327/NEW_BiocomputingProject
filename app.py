@@ -1,10 +1,13 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for
+from rdkit import Chem
+from rdkit.Chem import Draw
+from io import BytesIO
+import os
 
 app = Flask(__name__)
 
-
+# Function to extract data from XML line
 def extract_data_from_line(line, tag):
-    # This function extracts data enclosed within the specified XML tags in the line
     start_tag = f"<{tag}>"
     end_tag = f"</{tag}>"
     start_index = line.find(start_tag) + len(start_tag)
@@ -13,30 +16,27 @@ def extract_data_from_line(line, tag):
         return line[start_index:end_index].strip()
     return None
 
-
-# Initialize variables to hold the extracted information in separate lists
+# Initialize lists to hold extracted information
 names = []
 cas_numbers = []
 descriptions = []
 smiles = []
 
-with open('full database.xml') as file:
+# Parse XML file
+with open('full database.xml', encoding='UTF-8') as file:
     is_within_drug = False
     for line in file:
-        # Check if we're entering a new drug entry
         if '<drug ' in line:
             is_within_drug = True
             current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None}
         elif '</drug>' in line and is_within_drug:
-            # End of the current drug entry
-            if all(value is not None for value in current_drug.values()):  # Ensure all fields are populated
+            if all(value is not None for value in current_drug.values()):
                 names.append(current_drug['name'])
                 cas_numbers.append(current_drug['cas_number'])
                 descriptions.append(current_drug['description'])
                 smiles.append(current_drug['smiles'])
             is_within_drug = False
         elif is_within_drug:
-            # Extract data if we're within a drug entry
             if '<name>' in line and not current_drug['name']:
                 current_drug['name'] = extract_data_from_line(line, 'name')
             elif '<cas-number>' in line and not current_drug['cas_number']:
@@ -47,39 +47,53 @@ with open('full database.xml') as file:
                 value = next(file)
                 current_drug['smiles'] = extract_data_from_line(value, 'value')
 
-# Assuming the lists names, cas_numbers, descriptions, smiles are already populated and of equal length
+# Create dictionary of drugs
 drugs_dict = {}
-
-# Iterate through the indices of one of the lists
 for i in range(len(names)):
-    # Create a dictionary for each drug with its details
     drugs_dict[names[i]] = {
         'cas_number': cas_numbers[i],
         'description': descriptions[i],
         'smiles': smiles[i]
     }
 
-# Now drugs_dict contains each drug as a key with its details as a dictionary
-
-
+# Function to generate molecule image
+def generate_molecule_image(smiles_code):
+    mol = Chem.MolFromSmiles(smiles_code)
+    if mol is None:
+        return None
+    img = Draw.MolToImage(mol)
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='JPEG')
+    img_bytes.seek(0)
+    return img_bytes
 
 @app.route('/')
 def index():
     return render_template('index.html', name='PyCharm')
 
-@app.route('/search', methods=['GET'])
-def search():
-    query = request.args.get('query', '').lower()
-    results = [names for names in names if query in names.lower()]
-    return jsonify(results[:10])
-
 @app.route('/item/<name>')
 def item_page(name):
     drug = drugs_dict.get(name)
     if drug:
-        return render_template('results.html', item_name=name, drug=drug)
-    else:
-        return "Item not found", 404
+        smiles_code = drug['smiles']
+        img_bytes = generate_molecule_image(smiles_code)
+        if img_bytes:
+            img_bytes.seek(0)
+            temp_dir = os.path.join(app.root_path, 'static', 'temp')
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir)
+            image_path = os.path.join(temp_dir, f'{name}.jpg')
+            with open(image_path, 'wb') as img_file:
+                img_file.write(img_bytes.read())
+            image_url = url_for('static', filename=f'temp/{name}.jpg')
+            return render_template('results.html', item_name=name, drug=drug, molecule_image=image_url)
+    return "Item not found", 404
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').lower()
+    results = [name for name in names if query in name.lower()]
+    return jsonify(results[:10])
 
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
