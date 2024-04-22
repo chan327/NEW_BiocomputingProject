@@ -68,16 +68,15 @@
     <div class="container">
         <div class="info-block">
             <h2>About {{ item_name }}</h2>
-            <p>(Description)</p>
+            <p>{{ drug['description'] }}</p>
         </div>
 
         <div class="info-block">
             <h2>Chemical Identifiers</h2>
             <ul>
-                <li>UNI</li>
-                <li>IUPAC</li>
-                <li>Cas #</li>
-                <li>SMILES</li>
+                <li>CAS Number: {{ drug['cas_number'] }}</li>
+                <li>SMILES: {{ drug['smiles'] }}</li>
+
             </ul>
         </div>
 

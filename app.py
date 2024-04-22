@@ -47,6 +47,21 @@ with open('full database.xml') as file:
                 value = next(file)
                 current_drug['smiles'] = extract_data_from_line(value, 'value')
 
+# Assuming the lists names, cas_numbers, descriptions, smiles are already populated and of equal length
+drugs_dict = {}
+
+# Iterate through the indices of one of the lists
+for i in range(len(names)):
+    # Create a dictionary for each drug with its details
+    drugs_dict[names[i]] = {
+        'cas_number': cas_numbers[i],
+        'description': descriptions[i],
+        'smiles': smiles[i]
+    }
+
+# Now drugs_dict contains each drug as a key with its details as a dictionary
+
+
 
 @app.route('/')
 def index():
@@ -60,12 +75,11 @@ def search():
 
 @app.route('/item/<name>')
 def item_page(name):
-    if name in names:
-        return render_template('results.html', item_name=name)
+    drug = drugs_dict.get(name)
+    if drug:
+        return render_template('results.html', item_name=name, drug=drug)
     else:
         return "Item not found", 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
-
-
