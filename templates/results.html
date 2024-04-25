@@ -54,6 +54,8 @@
         }
 
         .info-block img {
+            display: block; /* Set display property to block */
+            margin: auto; /* Set margins to auto for centering */
             max-width: 50%;
             height: auto;
         }
@@ -68,36 +70,26 @@
     <div class="container">
         <div class="info-block">
             <h2>About {{ item_name }}</h2>
-            <p>(Description)</p>
+            <p>{{ drug['description'] }}</p>
         </div>
 
         <div class="info-block">
             <h2>Chemical Identifiers</h2>
             <ul>
-                <li>UNI</li>
-                <li>IUPAC</li>
-                <li>Cas #</li>
-                <li>SMILES</li>
-            </ul>
-        </div>
+                <li>CAS Number: {{ drug['cas_number'] }}</li>
+                <li>SMILES: {{ drug['smiles'] }}</li>
 
-        <div class="info-block long-vertical-block">
-            <h2>Targets</h2>
-            <ul>
-                <li>Target 1?</li>
-                <li>Target 2?</li>
-                <li>Target 3?</li>
             </ul>
         </div>
 
         <div class="info-block">
             <h2>Structure of {{ item_name }}</h2>
-            <a href="#" id="Peter Griffin"><img src="https://upload.wikimedia.org/wikipedia/en/c/c2/Peter_Griffin.png"></a>
+            <a href="#"><img src="{{ molecule_image }}" alt="Molecule Image"></a>
         </div>
     </div>
 
     <footer>
-        <p>it foking works let's foking gooooooooooo</p>
+        <p>it works let's gooooooooooo</p>
     </footer>
 </body>
 </html>
