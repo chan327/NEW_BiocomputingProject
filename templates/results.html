@@ -76,8 +76,12 @@
         <div class="info-block">
             <h2>Chemical Identifiers</h2>
             <ul>
-                <li>CAS Number: {{ drug['cas_number'] }}</li>
-                <li>SMILES: {{ drug['smiles'] }}</li>
+                <li><strong>CAS Number</strong>: {{ drug['cas_number'] }}</li>
+                <li><strong>SMILES</strong>: {{ drug['smiles'] }}</li>
+                <li><strong>Molecular Formula</strong>: {{ pubchem['MolecularFormula'] }}</li>
+                <li><strong>InChI</strong>: {{ pubchem['InChI'] }}</li>
+                <li><strong>InChI Key</strong>: {{ pubchem['InChIKey'] }}</li>
+                <li><strong>IUPAC Name</strong>: {{ pubchem['IUPACName'] }}</li>
 
             </ul>
         </div>
@@ -86,6 +90,21 @@
             <h2>Structure of {{ item_name }}</h2>
             <a href="#"><img src="{{ molecule_image }}" alt="Molecule Image"></a>
         </div>
+
+        <div class="info-block">
+                <h2>PubChem Chemical Information</h2>
+            <ul>
+                <li><strong>Molecular Weight</strong>: {{ pubchem['MolecularWeight'] }}</li>
+                <li><strong>Topological Polar Surface Area</strong>: {{ pubchem['TPSA'] }}</li>
+                <li><strong>Complexity</strong>: {{ pubchem['Complexity'] }}</li>
+                <li><strong>Charge</strong>: {{ pubchem['Charge'] }}</li>
+                <li><strong>XLogP</strong>: {{ pubchem['XLogP'] }}</li>
+                <li><strong>Exact Mass</strong>: {{ pubchem['ExactMass'] }}</li>
+                <li><strong>Monoisotopic Mass</strong>: {{ pubchem['MonoisotopicMass'] }}</li>
+
+            </ul>
+        </div>
+
 
         <div class="info-block">
                 <h2>Similar Drugs by SMILES Strings</h2>

@@ -3,6 +3,8 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, Draw
 from io import BytesIO
 import os
+import pubchempy as pcp
+
 
 app = Flask(__name__)
 
@@ -175,6 +177,22 @@ def most_similar_drugs(similarity_scores):
 
     return ten_drugs_list
 
+def gather_pubchem_info(input):
+    """-----------------------------------------------------------------------------------------
+    Use the pubchempy library to parse through the PubChem of the inputted drug
+
+    :param input: string, name of drug of interest
+    :return: pubchem_dict: dictionary containing 13 key-value pairs with chemical information
+    -----------------------------------------------------------------------------------------"""
+
+    pubchem_results = pcp.get_properties(('MolecularFormula', 'MolecularWeight',
+                               'InChI', 'InChIKey', 'IUPACName', 'TPSA', 'Complexity', 'Charge', 'XLogP',
+                                'ExactMass', 'MonoisotopicMass', 'HBondDonorCount', 'HBondAcceptorCount'),
+                              input, 'name')
+
+    pubchem_dict = pubchem_results[0]
+    return pubchem_dict
+
 
 @app.route('/')
 def index():
@@ -188,6 +206,8 @@ def item_page(name):
         smiles_code = drug['smiles']
         smiles_similar_drugs = smiles_similarity(smiles_code, drugs_dict)
         smiles_ten = most_similar_drugs(smiles_similar_drugs)
+        # Define variable for PubChem information
+        pubchem = gather_pubchem_info(name)
         # Creating molecule image
         img_bytes = generate_molecule_image(smiles_code)
         if img_bytes:
@@ -200,7 +220,8 @@ def item_page(name):
                 img_file.write(img_bytes.read())
             image_url = url_for('static', filename=f'temp/{name}.jpg')
             return render_template('results.html', item_name=name, drug=drug, molecule_image=image_url,
-                                   similar_drugs=smiles_ten, pubmed_search = f"https://pubmed.ncbi.nlm.nih.gov/?term={name}",
+                                   similar_drugs=smiles_ten, pubchem=pubchem,
+                                   pubmed_search = f"https://pubmed.ncbi.nlm.nih.gov/?term={name}",
                                    google_scholar = f"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C15&q={name}&oq=)",
                                    science_direct = f"https://www.sciencedirect.com/search?qs={name}")
     return "Item not found", 404
@@ -213,4 +234,5 @@ def search():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
+
 
