@@ -86,6 +86,32 @@
             <h2>Structure of {{ item_name }}</h2>
             <a href="#"><img src="{{ molecule_image }}" alt="Molecule Image"></a>
         </div>
+
+        <div class="info-block">
+                <h2>Similar Drugs by SMILES Strings</h2>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Drug Name</th>
+                            <th>Morgan Similarity</th>
+                            <th>Substructure Similarity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for similar_drug in similar_drugs %}
+                        <tr>
+                            <td>{{ similar_drug.rank }}</td>
+                            <td>{{ similar_drug.drug_name }}</td>
+                            <td>{{ similar_drug.morgan_similarity }}</td>
+                            <td>{{ similar_drug.substructure_similarity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </ul>
+        </div>
     </div>
 
     <footer>

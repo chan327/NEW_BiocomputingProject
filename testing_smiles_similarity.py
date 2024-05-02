@@ -10,7 +10,7 @@ smiles2 = "COC1=C(C=CC(=C1)C=O)O"
 mol1 = Chem.MolFromSmiles(smiles1)
 mol2 = Chem.MolFromSmiles(smiles2)
 
-# Aromatize molecules (if needed)
+# Aromatize molecules
 mol1 = Chem.Mol(mol1)
 mol2 = Chem.Mol(mol2)
 Chem.SanitizeMol(mol1)
@@ -32,6 +32,8 @@ sub_fp2 = Chem.PatternFingerprint(mol2)
 
 print("  Tanimoto: %s" % (DataStructs.TanimotoSimilarity(sub_fp1, sub_fp2)))
 
+# Sample code using indigo (had problems downloading this package)
+# Using this website: https://ctr.fandom.com/wiki/Report_the_similarity_between_two_structures#Indigo/Python
 
 # m1 = indigo.loadMolecule("CC(C)C=CCCCCC(=O)NCc1ccc(c(c1)OC)O")
 # m2 = indigo.loadMolecule("COC1=C(C=CC(=C1)C=O)O")
