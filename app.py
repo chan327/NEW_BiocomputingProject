@@ -200,7 +200,9 @@ def item_page(name):
                 img_file.write(img_bytes.read())
             image_url = url_for('static', filename=f'temp/{name}.jpg')
             return render_template('results.html', item_name=name, drug=drug, molecule_image=image_url,
-                                   similar_drugs=smiles_ten)
+                                   similar_drugs=smiles_ten, pubmed_search = f"https://pubmed.ncbi.nlm.nih.gov/?term={name}",
+                                   google_scholar = f"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C15&q={name}&oq=)",
+                                   science_direct = f"https://www.sciencedirect.com/search?qs={name}")
     return "Item not found", 404
 
 @app.route('/search', methods=['GET'])
