@@ -4,25 +4,85 @@ from rdkit.Chem import AllChem, Draw
 from io import BytesIO
 import os
 import pubchempy as pcp
+import html
 
 
 app = Flask(__name__)
 
 # Function to extract data from XML line
 def extract_data_from_line(line, tag):
+    """-----------------------------------------------------------------------------------------
+   Extract relevant data from the XML file by recognizing information stored within tags
+
+    :param line: line of XML file
+    :param tag: string, specifying what will be extracted
+    :return: string containing relevant information
+    -----------------------------------------------------------------------------------------"""
     start_tag = f"<{tag}>"
     end_tag = f"</{tag}>"
     start_index = line.find(start_tag) + len(start_tag)
     end_index = line.find(end_tag)
+    # Start and end tag on the same line
     if start_index > -1 and end_index > -1:
         return line[start_index:end_index].strip()
-    return None
+
+    # Start tag on one line, no end tag
+    elif start_index > -1 and end_index == -1:
+        data = line[start_index:].strip()
+        for next_line in file:
+            end_index = next_line.find(end_tag)
+            if end_index > -1:
+                data += " " + next_line[:end_index].strip()
+                break
+            else:
+                data += " " + next_line.strip()
+        return data
+    else:
+        return None
+
+
+def process_text(input_text):
+    """-----------------------------------------------------------------------------------------
+    Process the strings returned after passing through html.unescape() so that newlines are preserved, and text
+    in square brackets is removed (originally hyperlinks in the DrugBank website)
+
+    :param input_text: string, containing unescaped text
+    :return: processed_text, string containing html tags
+    -----------------------------------------------------------------------------------------"""
+    # Remove the parts of the string that fall within square brackets
+    parts = input_text.split('[')
+    processed_parts = []
+    for part in parts:
+        end_bracket_index = part.find(']')
+        if end_bracket_index != -1:
+            # If ']' is found, ignore the text after it
+            processed_parts.append(part[end_bracket_index + 1:])
+        else:
+            processed_parts.append(part)
+    # Join the processed parts back into a string
+    processed_text = ''.join(processed_parts)
+
+    # Replace '**' with a newline indicated by <br>
+    parts = processed_text.split('**')
+    processed_parts = []
+    for i, part in enumerate(parts):
+        if i != 0:
+            # Add newline to everything but the first part
+            processed_parts.append('\n')
+        processed_parts.append(part.strip())
+    # Join the parts back into a string, with <br> as an HTML tag
+    processed_text = '<br>'.join(processed_parts)
+
+    return processed_text
 
 # Initialize lists to hold extracted information
 names = []
 cas_numbers = []
 descriptions = []
 smiles = []
+pharmacodynamics = []
+mechanism = []
+toxicity = []
 
 # Parse XML file
 with open('full database.xml', encoding='UTF-8') as file:
@@ -30,13 +90,17 @@ with open('full database.xml', encoding='UTF-8') as file:
     for line in file:
         if '<drug ' in line:
             is_within_drug = True
-            current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None}
+            current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None, 'pharmacodynamics':
+                            None, 'mechanism': None, 'toxicity': None}
         elif '</drug>' in line and is_within_drug:
             if all(value is not None for value in current_drug.values()):
                 names.append(current_drug['name'])
                 cas_numbers.append(current_drug['cas_number'])
                 descriptions.append(current_drug['description'])
                 smiles.append(current_drug['smiles'])
+                pharmacodynamics.append(current_drug['pharmacodynamics'])
+                mechanism.append(current_drug['mechanism'])
+                toxicity.append(current_drug['toxicity'])
             is_within_drug = False
         elif is_within_drug:
             if '<name>' in line and not current_drug['name']:
@@ -44,10 +108,24 @@ with open('full database.xml', encoding='UTF-8') as file:
             elif '<cas-number>' in line and not current_drug['cas_number']:
                 current_drug['cas_number'] = extract_data_from_line(line, 'cas-number')
             elif '<description>' in line and not current_drug['description']:
-                current_drug['description'] = extract_data_from_line(line, 'description')
+                original_desc = extract_data_from_line(line, 'description')
+                original_desc = html.unescape(original_desc)
+                current_drug['description'] = process_text(original_desc)
             elif '<kind>SMILES</kind>' in line and not current_drug['smiles']:
                 value = next(file)
                 current_drug['smiles'] = extract_data_from_line(value, 'value')
+            elif '<pharmacodynamics>' in line and not current_drug['pharmacodynamics']:
+                original_pharm = extract_data_from_line(line, 'pharmacodynamics')
+                original_pharm = html.unescape(original_pharm)
+                current_drug['pharmacodynamics'] = process_text(original_pharm)
+            elif '<mechanism-of-action>' in line and not current_drug['mechanism']:
+                original_mech = extract_data_from_line(line, 'mechanism-of-action')
+                original_mech= html.unescape(original_mech)
+                current_drug['mechanism'] = process_text(original_mech)
+            elif '<toxicity>' in line and not current_drug['toxicity']:
+                original_tox = extract_data_from_line(line, 'toxicity')
+                original_tox = html.unescape(original_tox)
+                current_drug['toxicity'] = process_text(original_tox)
 
 # Create dictionary of drugs
 drugs_dict = {}
@@ -55,7 +133,10 @@ for i in range(len(names)):
     drugs_dict[names[i]] = {
         'cas_number': cas_numbers[i],
         'description': descriptions[i],
-        'smiles': smiles[i]
+        'smiles': smiles[i],
+        'pharmacodynamics': pharmacodynamics[i],
+        'mechanism': mechanism[i],
+        'toxicity': toxicity[i]
     }
 
 # Function to generate molecule image
@@ -234,5 +315,6 @@ def search():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
+    # print(drugs_dict)
 
 
