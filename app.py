@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, url_for
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, Draw
+from rdkit.Chem.Draw import MolToImage
 from io import BytesIO
 import os
 import pubchempy as pcp
@@ -44,38 +45,37 @@ def extract_data_from_line(line, tag):
 def process_text(input_text):
     """-----------------------------------------------------------------------------------------
     Process the strings returned after passing through html.unescape() so that newlines are preserved, and text
-    in square brackets is removed (originally hyperlinks in the DrugBank website)
+    in square brackets is removed (originally these were hyperlinks in the DrugBank website)
 
     :param input_text: string, containing unescaped text
     :return: processed_text, string containing html tags
     -----------------------------------------------------------------------------------------"""
     # Remove the parts of the string that fall within square brackets
-    parts = input_text.split('[')
-    processed_parts = []
-    for part in parts:
+    new_text = input_text.split('[')
+    new_text_list = []
+    for part in new_text:
         end_bracket_index = part.find(']')
         if end_bracket_index != -1:
-            # If ']' is found, ignore the text after it
-            processed_parts.append(part[end_bracket_index + 1:])
+            new_text_list.append(part[end_bracket_index + 1:])
         else:
-            processed_parts.append(part)
+            new_text_list.append(part)
     # Join the processed parts back into a string
-    processed_text = ''.join(processed_parts)
+    new_text_list = ''.join(new_text_list)
 
     # Replace '**' with a newline indicated by <br>
-    parts = processed_text.split('**')
-    processed_parts = []
+    parts = new_text_list.split('**')
+    new_text_list = []
     for i, part in enumerate(parts):
         if i != 0:
             # Add newline to everything but the first part
-            processed_parts.append('\n')
-        processed_parts.append(part.strip())
+            new_text_list.append('\n')
+        new_text_list.append(part.strip())
     # Join the parts back into a string, with <br> as an HTML tag
-    processed_text = '<br>'.join(processed_parts)
+    processed_text = '<br>'.join(new_text_list)
 
     return processed_text
 
-# Initialize lists to hold extracted information
+# Initialize lists to hold extracted drug information
 names = []
 cas_numbers = []
 descriptions = []
@@ -90,6 +90,7 @@ with open('full database.xml', encoding='UTF-8') as file:
     for line in file:
         if '<drug ' in line:
             is_within_drug = True
+            # Create initial dictionary to store information
             current_drug = {'name': None, 'cas_number': None, 'description': None, 'smiles': None, 'pharmacodynamics':
                             None, 'mechanism': None, 'toxicity': None}
         elif '</drug>' in line and is_within_drug:
@@ -103,6 +104,7 @@ with open('full database.xml', encoding='UTF-8') as file:
                 toxicity.append(current_drug['toxicity'])
             is_within_drug = False
         elif is_within_drug:
+            # Extract information based on inputted tags and store as dictionary values
             if '<name>' in line and not current_drug['name']:
                 current_drug['name'] = extract_data_from_line(line, 'name')
             elif '<cas-number>' in line and not current_drug['cas_number']:
@@ -141,14 +143,60 @@ for i in range(len(names)):
 
 # Function to generate molecule image
 def generate_molecule_image(smiles_code):
+    """-----------------------------------------------------------------------------------------
+   Generate a molecule image from a drug's SMILES string
+
+    :param smiles_code: string, smiles string stored in drug dictionary
+    :return: two JPEG images, one of 2D construction of molecule and another with stereochemistry
+    -----------------------------------------------------------------------------------------"""
     mol = Chem.MolFromSmiles(smiles_code)
     if mol is None:
         return None
+    # Generate 2D structure
     img = Draw.MolToImage(mol)
     img_bytes = BytesIO()
+    # Save image as JPEG
     img.save(img_bytes, format='JPEG')
     img_bytes.seek(0)
-    return img_bytes
+
+    # Create another structure, using 3D coordinates to determine stereochemistry
+    mol_plus = Chem.AddHs(mol)
+    AllChem.EmbedMolecule(mol_plus)
+    AllChem.MMFFOptimizeMolecule(mol_plus)
+
+    # Convert these coordinates back into an image
+    img_plus = MolToImage(mol_plus)
+    img_bytes_plus = BytesIO()
+    # Save image as JPEG
+    img_plus.save(img_bytes_plus, format='JPEG')
+    img_bytes_plus.seek(0)
+
+    return img_bytes, img_bytes_plus
+    # For some drugs, there was a ValueError: Bad Conformer ID when using AllChem.MMFFOptimizeMolecule(mol_plus). To
+    # generate only the 2D structure, uncomment out the line below.
+    # return img_bytes
+
+
+
+""" This is the work we completed trying to use PyMol to generate a 3D representation of the molecule. We weren't able
+to get this part completed successfully, but here was our progress. 
+
+    def generate_3d_molecule(smiles_code):
+    
+    Generate a 3D representation of a molecule from its SMILES code using Py3Dmol.
+
+    :param smiles_code: SMILES code of the molecule.
+    :return: HTML string containing the 3D visualization of the molecule.
+    
+    viewer = py3Dmol.view(width=400, height=400)
+    viewer.addModel(smiles_code, 'sdf')
+    viewer.setStyle({'stick': {}})
+    viewer.setBackgroundColor('white')
+    viewer.zoomTo()
+    return viewer.render()
+Code leads to SMILES parse Error and is showing up as a blank box on the HTML file, unsure of how to fix
+"""
+
 
 # Function to compare two smiles strings
 def two_smiles(smiles1, smiles2):
@@ -287,11 +335,16 @@ def item_page(name):
         smiles_code = drug['smiles']
         smiles_similar_drugs = smiles_similarity(smiles_code, drugs_dict)
         smiles_ten = most_similar_drugs(smiles_similar_drugs)
+
         # Define variable for PubChem information
         pubchem = gather_pubchem_info(name)
-        # Creating molecule image
-        img_bytes = generate_molecule_image(smiles_code)
-        if img_bytes:
+
+        # Creating molecule images
+        # Remove img_bytes_plus if the search query returns a ValueError, to access the page with only one image
+        # img_bytes = generate_molecule_image(smiles_code)
+        img_bytes, img_bytes_plus = generate_molecule_image(smiles_code)
+        # if img_bytes:
+        if img_bytes and img_bytes_plus:
             img_bytes.seek(0)
             temp_dir = os.path.join(app.root_path, 'static', 'temp')
             if not os.path.exists(temp_dir):
@@ -299,12 +352,27 @@ def item_page(name):
             image_path = os.path.join(temp_dir, f'{name}.jpg')
             with open(image_path, 'wb') as img_file:
                 img_file.write(img_bytes.read())
+
+            # Save 3D image
+            # Comment out this section to access the web page with only one image
+            image_path_plus = os.path.join(temp_dir, f'{name}_plus.jpg')
+            with open(image_path_plus, 'wb') as img_file:
+                img_file.write(img_bytes_plus.read())
+
             image_url = url_for('static', filename=f'temp/{name}.jpg')
+            # Comment out the line below to access the web page with only one image
+            image_url_plus = url_for('static', filename=f'temp/{name}_3d.jpg')
+
             return render_template('results.html', item_name=name, drug=drug, molecule_image=image_url,
-                                   similar_drugs=smiles_ten, pubchem=pubchem,
+                                   molecule_image_plus=image_url_plus, similar_drugs=smiles_ten, pubchem=pubchem,
                                    pubmed_search = f"https://pubmed.ncbi.nlm.nih.gov/?term={name}",
                                    google_scholar = f"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C15&q={name}&oq=)",
                                    science_direct = f"https://www.sciencedirect.com/search?qs={name}")
+        # return render_template('results.html', item_name=name, drug=drug, molecule_image=image_url,
+        #                        similar_drugs=smiles_ten, pubchem=pubchem,
+        #                        pubmed_search=f"https://pubmed.ncbi.nlm.nih.gov/?term={name}",
+        #                        google_scholar=f"https://scholar.google.com/scholar?hl=en&as_sdt=0%2C15&q={name}&oq=)",
+        #                        science_direct=f"https://www.sciencedirect.com/search?qs={name}")
     return "Item not found", 404
 
 @app.route('/search', methods=['GET'])
@@ -315,6 +383,5 @@ def search():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8001)
-    # print(drugs_dict)
 
 
