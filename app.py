@@ -203,6 +203,9 @@ def two_smiles(smiles1, smiles2):
     """-----------------------------------------------------------------------------------------
     Compare the SMILES strings for two different drugs. Determine the Tanimoto similarity scores for two types of
     fingerprints: Morgan fingerprints and substructure fingerprints.
+    Websites referenced for help:
+    https://ctr.fandom.com/wiki/Report_the_similarity_between_two_structures#Indigo/Python
+    https://www.researchgate.net/post/How_to_compare_a_set_of_SMILES_structures
 
     :param smiles1: string, for the inputted drug of interest
     :param smiles2: string, for the drug in the comprehensive set that will be compared with the inputted drug
@@ -272,6 +275,7 @@ def smiles_similarity(input, drug_dict):
                 if similarity_score is not None:
                     similarity_dict[key] = similarity_score
                     similarity_list.append(similarity_dict)
+            # Exception handling, program continues execution
             except Exception as e:
                 # print(f"Error occurred for drug '{key}': {e}")
                 pass
@@ -309,6 +313,7 @@ def most_similar_drugs(similarity_scores):
 def gather_pubchem_info(input):
     """-----------------------------------------------------------------------------------------
     Use the pubchempy library to parse through the PubChem of the inputted drug
+    https://pubchempy.readthedocs.io/en/latest/guide/properties.html
 
     :param input: string, name of drug of interest
     :return: pubchem_dict: dictionary containing 13 key-value pairs with chemical information
