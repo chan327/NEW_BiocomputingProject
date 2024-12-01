@@ -1,3 +1,3 @@
-New Repository for our project because I am a dumbass and I can't code.
+This website allows users to search for a drug, which will output information about the drug (description, structure visualization, chemical information, SMILES string) and then identify the most similar drugs to the input by comparing SMILES strings. Data is compiled from multiple sources, and relevant information about chemical properties and biological activity is displayed. 
 
-This will be my 13th reason.
+This aims to provide a useful tool to researchers trying to learn about existing compounds (or screen for similar drugs) in one place without having to access multiple websites (or to help undergrads complete their organic chemistry pre-labs without sifting through Pubchem).
